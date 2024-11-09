@@ -1,1 +1,1 @@
-export { default as UserHome } from './UserHomeContainer'
+export { default as UserHomeView } from './UserHomeView'

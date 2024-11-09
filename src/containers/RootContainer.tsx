@@ -1,14 +1,21 @@
-import { PATHS } from '@/config/paths'
-import { homePaths } from '@/modules/home'
-import { Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { PATHS } from '@/config'
+import { MainLayout } from '@/layouts'
+import { homeRoutes } from '@/modules/home'
+import { loginRoutes } from '@/modules/auth'
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+} from 'react-router-dom'
 
-export const RootContainer = () => {
-  return (
-    <Suspense>
-      <Routes>
-        <Route path={PATHS.root} element={<Navigate to={homePaths.home} />} />
-      </Routes>
-    </Suspense>
+const routes = [...homeRoutes, ...loginRoutes]
+
+const RootContainer = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path={PATHS.root} element={<MainLayout />}>
+      {...routes}
+    </Route>
   )
-}
+)
+
+export default RootContainer
