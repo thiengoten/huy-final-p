@@ -1,6 +1,6 @@
 export const PATHS = {
   root: '/',
-  home: '/home',
+  login: '/login',
 }
 
 export const PREFIX_ROUTE = ''
