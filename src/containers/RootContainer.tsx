@@ -1,14 +1,14 @@
 import { PATHS } from '@/config'
 import { MainLayout } from '@/layouts'
+import { authRoutes } from '@/modules/auth'
 import { homeRoutes } from '@/modules/home'
-import { loginRoutes } from '@/modules/auth'
 import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
 } from 'react-router-dom'
 
-const routes = [...homeRoutes, ...loginRoutes]
+const routes = [...homeRoutes, ...authRoutes]
 
 const RootContainer = createBrowserRouter(
   createRoutesFromElements(

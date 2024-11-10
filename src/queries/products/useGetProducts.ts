@@ -1,9 +1,8 @@
-import { GetProductsResponse } from '@/queries/products/types'
 import { UseQueryOptions } from '@tanstack/react-query'
-import { AxiosResponse } from 'axios'
 
 export const useGetProducts = (
-  options?: UseQueryOptions<AxiosResponse<GetProductsResponse>, Error>
+  options?: UseQueryOptions<any, Error>
 ) => {
-  console.log('🚀 ~ options:', options)
+  console.log(options);
 }
+

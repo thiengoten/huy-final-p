@@ -7,7 +7,7 @@ export const authPaths = {
   register: `${PREFIX_ROUTE}/register`,
 }
 
-export const loginRoutes = [
+export const authRoutes = [
   <Route id={authPaths.login} path={authPaths.login} element={<LoginView />} />,
   <Route
     id={authPaths.register}
