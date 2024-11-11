@@ -1,6 +1,7 @@
 import { PREFIX_ROUTE } from '@/config'
-import { LoginView, RegisterView } from '@/modules/auth/view'
+
 import { Route } from 'react-router-dom'
+import { LoginView, RegisterView } from './view'
 
 export const authPaths = {
   login: `${PREFIX_ROUTE}/login`,
