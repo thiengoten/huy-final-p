@@ -1,18 +1,18 @@
-import { PREFIX_ROUTE } from '@/config'
+import { PATHS } from "@/config"
 
-import { Route } from 'react-router-dom'
-import { LoginView, RegisterView } from './view'
+import { Route } from "react-router-dom"
+import { Identity } from "./view"
 
 export const authPaths = {
-  login: `${PREFIX_ROUTE}/login`,
-  register: `${PREFIX_ROUTE}/register`,
+  login: `${PATHS.identity}/login`,
+  signup: `${PATHS.identity}/signup`,
 }
 
 export const authRoutes = [
-  <Route id={authPaths.login} path={authPaths.login} element={<LoginView />} />,
+  <Route id={authPaths.login} path={authPaths.login} element={<Identity />} />,
   <Route
-    id={authPaths.register}
-    path={authPaths.register}
-    element={<RegisterView />}
+    id={authPaths.signup}
+    path={authPaths.signup}
+    element={<Identity />}
   />,
 ]

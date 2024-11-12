@@ -1,20 +1,28 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
+import { Link } from "react-router-dom"
 
 export default function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false)
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
   return (
     <div className="flex h-[80vh] w-full items-center justify-center">
       <Card className="flex w-full max-w-4xl overflow-hidden">
-        <div className="flex-1 p-6 flex flex-col items-stretch  items-center justify-center">
+        <div className="flex-1 p-6 flex flex-col items-stretch justify-center">
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
@@ -42,7 +50,29 @@ export default function LoginForm() {
                     Forgot your password?
                   </Link>
                 </div>
-                <Input id="password" type="password" required />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={togglePasswordVisibility}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
               <Button type="submit" className="w-full">
                 Login
@@ -52,7 +82,7 @@ export default function LoginForm() {
               </Button>
               <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <Link to="" className="underline">
+                <Link to="../signup" className="underline">
                   Sign up
                 </Link>
               </div>
@@ -70,5 +100,5 @@ export default function LoginForm() {
         </div>
       </Card>
     </div>
-  );
+  )
 }

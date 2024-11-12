@@ -1,11 +1,14 @@
+import Navbar from '@/components/Navbar'
 import { Outlet } from 'react-router-dom'
 
 const MainLayout = () => {
   return (
     <>
       {/* TODO: can implement navbar if want */}
-      <header></header>
-      <main>
+      <header>
+        <Navbar />
+      </header>
+      <main className='container'>
         <Outlet />
       </main>
       {/* TODO: can implement footer if want */}
