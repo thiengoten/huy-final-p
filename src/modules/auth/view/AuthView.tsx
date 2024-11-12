@@ -1,9 +1,9 @@
-import { lazy } from "react"
-
-const LoginForm = lazy(() => import("@/components/login-form"))
 import { Spinner } from "@/components/ui/spinner"
-import { Suspense, useMemo } from "react"
+import { Suspense, lazy, useMemo } from "react"
 import { Outlet, useLocation } from "react-router-dom"
+
+const LoginForm = lazy(() => import("@/components/Auth/login-form"))
+const Registerform = lazy(() => import("@/components/Auth/register-form"))
 
 //TODO: Huy will implement here
 const Identity = () => {
@@ -32,6 +32,6 @@ const Identity = () => {
 }
 
 Identity.Login = LoginForm
-Identity.SignUp = () => <div>Sign Up</div>
+Identity.SignUp = Registerform
 
 export default Identity
