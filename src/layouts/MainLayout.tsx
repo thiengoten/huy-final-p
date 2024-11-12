@@ -1,5 +1,5 @@
-import Navbar from "@/components/Navbar";
-import { Outlet } from "react-router-dom";
+import Navbar from '@/components/Navbar'
+import { Outlet } from 'react-router-dom'
 
 const MainLayout = () => {
   return (
@@ -8,13 +8,13 @@ const MainLayout = () => {
       <header>
         <Navbar />
       </header>
-      <main>
+      <main className='container'>
         <Outlet />
       </main>
       {/* TODO: can implement footer if want */}
       <footer></footer>
     </>
-  );
-};
+  )
+}
 
-export default MainLayout;
+export default MainLayout

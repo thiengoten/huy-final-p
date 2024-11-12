@@ -1,5 +1,5 @@
 import { PATHS } from '@/config'
-import { MainLayout } from '@/layouts'
+import { AdminLayout, MainLayout } from '@/layouts'
 import { authRoutes } from '@/modules/auth'
 import { homeRoutes } from '@/modules/home'
 import {
@@ -8,13 +8,22 @@ import {
   Route,
 } from 'react-router-dom'
 
-const routes = [...homeRoutes, ...authRoutes]
+const userRoutes = [...homeRoutes]
+const identityRoutes = [...authRoutes]
+
+//TODO: Add admin routes
+// const adminRoutes = []
 
 const RootContainer = createBrowserRouter(
   createRoutesFromElements(
-    <Route path={PATHS.root} element={<MainLayout />}>
-      {...routes}
-    </Route>
+    <>
+      <Route path={PATHS.root} element={<MainLayout />}>
+        {...userRoutes}
+      </Route>
+      <Route path={PATHS.identity} element={<AdminLayout />}>
+        {...identityRoutes}
+      </Route>
+    </>
   )
 )
 

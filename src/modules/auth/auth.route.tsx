@@ -1,11 +1,11 @@
-import { PREFIX_ROUTE } from '@/config'
+import { PATHS } from '@/config'
 
 import { Route } from 'react-router-dom'
 import { LoginView, RegisterView } from './view'
 
 export const authPaths = {
-  login: `${PREFIX_ROUTE}/login`,
-  register: `${PREFIX_ROUTE}/register`,
+  login: `${PATHS.identity}/login`,
+  register: `${PATHS.identity}/register`,
 }
 
 export const authRoutes = [
