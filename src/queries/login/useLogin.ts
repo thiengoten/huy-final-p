@@ -3,16 +3,13 @@ import { useMutation, UseMutationOptions,DefaultError } from "@tanstack/react-qu
 import { AuthTokenResponsePassword } from '@supabase/supabase-js'
 import { LoginPayload } from "@/queries/login/login.types"
 
-
-
-
 export const useLogin = (options?: UseMutationOptions<AuthTokenResponsePassword,DefaultError, LoginPayload>) => {
-  const {data: loginData, error, isPending} = useMutation<AuthTokenResponsePassword, DefaultError, LoginPayload>({
+  const {data: loginData, error, isPending, mutate: onLoginUser} = useMutation<AuthTokenResponsePassword, DefaultError, LoginPayload>({
     mutationFn: (data: LoginPayload ) => {
       const {email, password} = data
       return signIn(email, password)
     },
     ...options
   })
-  return {loginData, error, isPending}
+  return {loginData, error, isPending, onLoginUser}
 }
