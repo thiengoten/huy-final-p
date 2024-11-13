@@ -9,28 +9,32 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Eye, EyeOff } from "lucide-react"
-import { useState } from "react"
+import React from "react"
 import { Link } from "react-router-dom"
 
-export default function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false)
+export default function Registerform() {
+  const [showPassword, setShowPassword] = React.useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false)
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
-
+  const togglePasswordVisibility = () => setShowPassword(!showPassword)
+  const toggleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword(!showConfirmPassword)
   return (
     <div className="flex h-[80vh] w-full items-center justify-center">
       <Card className="flex w-full max-w-4xl overflow-hidden">
         <div className="flex-1 p-6 flex flex-col items-stretch justify-center">
           <CardHeader>
-            <CardTitle className="text-2xl">Login</CardTitle>
+            <CardTitle className="text-2xl">Create an Account</CardTitle>
             <CardDescription>
-              Enter your email below to login to your account
+              Enter your details below to create your account
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input id="name" type="text" placeholder="John Doe" required />
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -41,15 +45,7 @@ export default function LoginForm() {
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    to=""
-                    className="ml-auto inline-block text-sm underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -74,16 +70,42 @@ export default function LoginForm() {
                   </Button>
                 </div>
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirm-password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={toggleConfirmPasswordVisibility}
+                    aria-label={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
               <Button type="submit" className="w-full">
-                Login
+                Create Account
               </Button>
               <Button variant="outline" className="w-full">
-                Login with Google
+                Sign up with Google
               </Button>
               <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link to="../signup" className="underline">
-                  Sign up
+                Already have an account?{" "}
+                <Link to="../login" className="underline">
+                  Log in
                 </Link>
               </div>
             </form>
