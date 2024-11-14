@@ -1,13 +1,17 @@
+import { AppSidebar } from "@/components/admin/app-sidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Outlet } from "react-router-dom"
 
-const AdminLayout = () => {
+export default function AdminLayout() {
   return (
-    <>
-      <main className="bg-loginBackground">
-        <Outlet />
-      </main>
-    </>
+    <SidebarProvider>
+      <div className="flex">
+        <AppSidebar />
+        <main className="flex-1">
+          <SidebarTrigger />
+          <Outlet />
+        </main>
+      </div>
+    </SidebarProvider>
   )
 }
-
-export default AdminLayout
