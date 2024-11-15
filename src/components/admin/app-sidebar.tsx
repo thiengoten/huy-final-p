@@ -44,7 +44,7 @@ const adminSections = [
     icon: Package,
     items: [
       { title: "All Products", url: "products" },
-      { title: "Add Product", url: "/products/add" },
+      { title: "Add Product", url: "add-product" },
       { title: "Categories", url: "/products/categories" },
     ],
   },
