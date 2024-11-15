@@ -1,6 +1,6 @@
 import { PATHS } from "@/config"
-import { AdminLayout, MainLayout } from "@/layouts"
-import { adminRoutes } from "@/modules/admin"
+import { AdminLayout, IdentityLayout, MainLayout } from "@/layouts"
+import { adminRoutes as admRoutes } from "@/modules/admin"
 import { authRoutes } from "@/modules/auth"
 import { homeRoutes } from "@/modules/home"
 import {
@@ -11,7 +11,7 @@ import {
 
 const userRoutes = [...homeRoutes]
 const identityRoutes = [...authRoutes]
-const adRoutes = [...adminRoutes]
+const adminRoutes = [...admRoutes]
 //TODO: Add admin routes
 // const adminRoutes = []
 
@@ -21,11 +21,11 @@ const RootContainer = createBrowserRouter(
       <Route path={PATHS.root} element={<MainLayout />}>
         {...userRoutes}
       </Route>
-      <Route path={PATHS.identity} element={<AdminLayout />}>
+      <Route path={PATHS.identity} element={<IdentityLayout />}>
         {...identityRoutes}
       </Route>
       <Route path={PATHS.admin} element={<AdminLayout />}>
-        {...adRoutes}
+        {...adminRoutes}
       </Route>
     </>
   )
