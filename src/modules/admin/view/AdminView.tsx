@@ -5,9 +5,11 @@ const Overview = lazy(() => import("@/components/admin/Overview"))
 const AllProduct = lazy(
   () => import("@/modules/admin/view/Products/AllProduct")
 )
-const AllOrder = lazy(() => import("@/components/admin/AllOrder"))
-const AllUser = lazy(() => import("@/components/admin/AllUser"))
-const AddProduct = lazy(() => import("@/modules/admin/view/Products/AddProduct"))
+const AllOrder = lazy(() => import("@/modules/admin/view/Orders/AllOrder"))
+const AllUser = lazy(() => import("@/modules/admin/view/Users/AllUser"))
+const AddProduct = lazy(
+  () => import("@/modules/admin/view/Products/AddProduct")
+)
 
 const Admin = () => {
   const { pathname } = useLocation()
