@@ -6,6 +6,7 @@ import Admin from "./view/AdminView"
 export const adminPaths = {
   dashboard: `${PATHS.admin}/overview`,
   product: `${PATHS.admin}/products`,
+  addproduct: `${PATHS.admin}/add-product`,
   manageUser: `${PATHS.admin}/users`,
   manageOrder: `${PATHS.admin}/orders`,
 }
@@ -19,6 +20,11 @@ export const adminRoutes = [
   <Route
     id={adminPaths.product}
     path={adminPaths.product}
+    element={<Admin />}
+  />,
+  <Route
+    id={adminPaths.addproduct}
+    path={adminPaths.addproduct}
     element={<Admin />}
   />,
   <Route
