@@ -14,30 +14,24 @@ const AddProduct = lazy(
 const Admin = () => {
   const { pathname } = useLocation()
 
-  const isDashboard = pathname.includes("overview")
-  const isProduct = pathname.includes("products")
-  const isManage = pathname.includes("users")
-  const isManageOrder = pathname.includes("orders")
-  const isAddProduct = pathname.includes("add-product")
-
   const renderForm = useMemo(() => {
-    if (isDashboard) {
+    if (pathname.includes("overview")) {
       return <Admin.Dashboard />
     }
-    if (isProduct) {
+    if (pathname.includes("products")) {
       return <Admin.Product />
     }
-    if (isAddProduct) {
+    if (pathname.includes("add-product")) {
       return <Admin.AddProduct />
     }
-    if (isManage) {
+    if (pathname.includes("users")) {
       return <Admin.Manage />
     }
-    if (isManageOrder) {
+    if (pathname.includes("orders")) {
       return <Admin.ManageOrder />
     }
     return <Outlet />
-  }, [isDashboard, isProduct, isManage, isManageOrder])
+  }, [pathname])
   return <div>{renderForm}</div>
 }
 

@@ -70,12 +70,21 @@ const users = [
     status: "Active",
   },
 ]
+
+type User = {
+  id: number
+  name: string
+  email: string
+  role: "User" | "Admin" | "Moderator" // Define allowed roles
+  status: "Active" | "Inactive" | "Suspended" // Define allowed statuses
+}
+
 export default function AllUser() {
-  const [sortColumn, setSortColumn] = useState<string>("")
-  const [sortDirection, setSortDirection] = useState<string>("asc")
-  const [searchTerm, setSearchTerm] = useState<string>("")
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
-  const [editingUser, setEditingUser] = useState<any>(null)
+  const [sortColumn, setSortColumn] = useState("")
+  const [sortDirection, setSortDirection] = useState("asc")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
 
   const sortedUsers = [...users]
     .sort((a: any, b: any) => {
@@ -230,7 +239,10 @@ export default function AllUser() {
                     id="role"
                     value={editingUser.role}
                     onChange={(e) =>
-                      setEditingUser({ ...editingUser, role: e.target.value })
+                      setEditingUser({
+                        ...editingUser,
+                        role: e.target.value as User["role"],
+                      })
                     }
                   />
                 </div>
@@ -240,7 +252,10 @@ export default function AllUser() {
                     id="status"
                     value={editingUser.status}
                     onChange={(e) =>
-                      setEditingUser({ ...editingUser, status: e.target.value })
+                      setEditingUser({
+                        ...editingUser,
+                        status: e.target.value as User["status"],
+                      })
                     }
                   />
                 </div>
