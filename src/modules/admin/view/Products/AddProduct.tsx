@@ -1,11 +1,3 @@
-"use client"
-
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Plus, X } from "lucide-react"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -25,77 +17,85 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-
-// Define the form schema
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Product name must be at least 2 characters.",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
-  }),
-  price: z.string().refine((val) => !isNaN(Number(val)), {
-    message: "Price must be a valid number.",
-  }),
-  category: z.string({
-    required_error: "Please select a category.",
-  }),
-  stock: z.string().refine((val) => !isNaN(Number(val)), {
-    message: "Stock must be a valid number.",
-  }),
-  images: z.array(z.instanceof(File)).refine((files) => files.length > 0, {
-    message: "At least one image is required.",
-  }),
-})
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { initValues, productSchema } from "./AddProduct.helper"
+import { supabase } from "@/services"
+import { useAddProduct } from "@/queries/products"
 
 export default function AddProductForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [previewImages, setPreviewImages] = useState<string[]>([])
+  const [files, setFiles] = useState<File[]>([])
 
-  // Initialize the form
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      price: "",
-      category: "",
-      stock: "",
-      images: [],
-    },
+  const { onAddNewProduct } = useAddProduct()
+
+  const form = useForm<z.infer<typeof productSchema>>({
+    resolver: zodResolver(productSchema),
+    defaultValues: initValues,
   })
+  const { control, handleSubmit, getValues, setValue } = form
+  // console.log(getValues("image"))
 
   // Handle image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    form.setValue("images", files)
+    setFiles((prevFiles) => [...prevFiles, ...files])
 
-    // Create preview URLs
-    const newPreviewImages = files.map((file) => URL.createObjectURL(file))
-    setPreviewImages((prevImages) => [...prevImages, ...newPreviewImages])
+    try {
+      // Parallel file uploads
+      const uploadPromises = files.map((file) =>
+        supabase.storage.from("product-image").upload(file.name, file)
+      )
+
+      const results = await Promise.all(uploadPromises)
+
+      results.forEach(({ data, error }, index) => {
+        if (error) {
+          console.error(`Error uploading file ${files[index].name}:`, error)
+        } else {
+          console.log("Uploaded successfully:", data)
+        }
+      })
+
+      // Generate and update preview images
+      const newPreviewImages = files.map((file) => URL.createObjectURL(file))
+      setPreviewImages((prevImages) => [...prevImages, ...newPreviewImages])
+    } catch (err) {
+      console.error("Error during image upload:", err)
+    }
   }
-
   // Remove image
-  const removeImage = (index: number) => {
-    const updatedImages = form.getValues("images").filter((_, i) => i !== index)
-    form.setValue("images", updatedImages)
+  const removeImage = async (index: number) => {
+    const fileToRemove = files[index]
 
-    setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index))
+    if (!fileToRemove) return
+
+    try {
+      // Remove file from storage
+      const { data, error } = await supabase.storage
+        .from("product-image")
+        .remove([fileToRemove.name])
+
+      if (error) {
+        console.error(`Error removing file ${fileToRemove.name}:`, error)
+      } else {
+        console.log("Removed successfully:", data)
+      }
+
+      // Update state after removal
+      setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
+      setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index))
+    } catch (err) {
+      console.error("Error during image removal:", err)
+    }
   }
 
-  // Handle form submission
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true)
-    // Simulate API call
-    setTimeout(() => {
-      console.log(values)
-      setIsSubmitting(false)
-
-      form.reset()
-      setPreviewImages([])
-    }, 2000)
+  const onSubmit = (values: z.infer<typeof productSchema>) => {
+    console.log("🚀 ~ onSubmit ~ values:", values)
+    onAddNewProduct(values as any)
   }
-
   return (
     <div className="w-full mx-auto p-6 space-y-8">
       <div>
@@ -105,10 +105,10 @@ export default function AddProductForm() {
         </p>
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <FormField
-            control={form.control}
-            name="name"
+            control={control}
+            name="title"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Product Name</FormLabel>
@@ -123,7 +123,7 @@ export default function AddProductForm() {
             )}
           />
           <FormField
-            control={form.control}
+            control={control}
             name="description"
             render={({ field }) => (
               <FormItem>
@@ -144,7 +144,7 @@ export default function AddProductForm() {
           />
           <div className="grid grid-cols-2 gap-4">
             <FormField
-              control={form.control}
+              control={control}
               name="price"
               render={({ field }) => (
                 <FormItem>
@@ -155,20 +155,8 @@ export default function AddProductForm() {
                       step="0.01"
                       placeholder="0.00"
                       {...field}
+                      value={field.value ?? ""}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="stock"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Stock</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="0" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -177,13 +165,13 @@ export default function AddProductForm() {
           </div>
           <FormField
             control={form.control}
-            name="category"
+            name="brand"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  defaultValue={field.value as string}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -205,10 +193,10 @@ export default function AddProductForm() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
-            name="images"
-            render={() => (
+            name="image"
+            render={({ field: { value, name, ref, disabled, onBlur } }) => (
               <FormItem>
                 <FormLabel>Product Images</FormLabel>
                 <FormControl>
@@ -219,6 +207,11 @@ export default function AddProductForm() {
                       multiple
                       onChange={handleImageUpload}
                       className="cursor-pointer"
+                      value={value as any}
+                      name={name}
+                      ref={ref}
+                      disabled={disabled}
+                      onBlur={onBlur}
                     />
                     <div className="grid grid-cols-3 gap-4">
                       {previewImages.map((src, index) => (
@@ -249,20 +242,8 @@ export default function AddProductForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Adding Product
-              </>
-            ) : (
-              <>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Product
-              </>
-            )}
-          </Button>
+          /> */}
+          <Button type="submit">Submit</Button>
         </form>
       </Form>
     </div>
