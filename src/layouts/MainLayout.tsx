@@ -1,5 +1,6 @@
-import Navbar from '@/components/Navbar'
-import { Outlet } from 'react-router-dom'
+import Navbar from "@/components/Navbar"
+import { Toaster } from "@/components/ui/toaster"
+import { Outlet } from "react-router-dom"
 
 const MainLayout = () => {
   return (
@@ -8,11 +9,12 @@ const MainLayout = () => {
       <header>
         <Navbar />
       </header>
-      <main className='container'>
+      <main className="container">
         <Outlet />
       </main>
       {/* TODO: can implement footer if want */}
       <footer></footer>
+      <Toaster />
     </>
   )
 }

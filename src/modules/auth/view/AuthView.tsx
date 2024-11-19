@@ -4,7 +4,7 @@ import { Outlet, useLocation } from "react-router-dom"
 
 const LoginForm = lazy(() => import("@/components/Auth/login-form"))
 const SignUpForm = lazy(() => import("@/components/Auth/register-form"))
-//TODO: Huy will implement here
+
 const Identity = () => {
   const { pathname } = useLocation()
 
@@ -12,12 +12,10 @@ const Identity = () => {
   const isSignUpPage = pathname.includes("signup")
 
   const renderForm = useMemo(() => {
-    if (isLoginPage) {
-      return <Identity.Login />
-    }
-    if (isSignUpPage) {
-      return <Identity.SignUp />
-    }
+    if (isLoginPage) return <Identity.Login />
+
+    if (isSignUpPage) return <Identity.SignUp />
+
     return <Outlet />
   }, [isLoginPage, isSignUpPage])
 
