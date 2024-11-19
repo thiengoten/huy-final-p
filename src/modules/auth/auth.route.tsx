@@ -9,8 +9,14 @@ export const authPaths = {
 }
 
 export const authRoutes = [
-  <Route id={authPaths.login} path={authPaths.login} element={<Identity />} />,
   <Route
+    key={authPaths.login}
+    id={authPaths.login}
+    path={authPaths.login}
+    element={<Identity />}
+  />,
+  <Route
+    key={authPaths.signup}
     id={authPaths.signup}
     path={authPaths.signup}
     element={<Identity />}

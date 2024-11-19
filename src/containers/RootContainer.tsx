@@ -1,3 +1,4 @@
+import { ProtectedRoute } from "@/components/CustomRoute/CustomRoute"
 import { PATHS } from "@/config"
 import { AdminLayout, IdentityLayout, MainLayout } from "@/layouts"
 import { adminRoutes as admRoutes } from "@/modules/admin"
@@ -12,13 +13,19 @@ import {
 const userRoutes = [...homeRoutes]
 const identityRoutes = [...authRoutes]
 const adminRoutes = [...admRoutes]
-//TODO: Add admin routes
-// const adminRoutes = []
 
 const RootContainer = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path={PATHS.root} element={<MainLayout />}>
+      <Route
+        path={PATHS.root}
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+        action
+      >
         {...userRoutes}
       </Route>
       <Route path={PATHS.identity} element={<IdentityLayout />}>
