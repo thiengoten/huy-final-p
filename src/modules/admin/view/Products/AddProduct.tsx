@@ -9,11 +9,17 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Select, SelectItem, SelectTrigger } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { useAddProduct } from "@/queries/products"
 import { supabase } from "@/services"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { SelectContent, SelectValue } from "@radix-ui/react-select"
 import { X } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -23,50 +29,81 @@ import { initValues, productSchema } from "./AddProduct.helper"
 export default function AddProductForm() {
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [files, setFiles] = useState<File[]>([])
-  console.log(previewImages)
+
+  const { onAddNewProduct } = useAddProduct()
+
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: initValues,
   })
+  const { control, handleSubmit, setValue } = form
   // Handle image upload
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    setFiles(files)
-    console.log(files)
-    for (const file of files) {
-      const { data, error } = await supabase.storage
-        .from("product-image")
-        .upload(file.name, file)
-      if (error) {
-        console.error("Error uploading file: ", error)
-      }
-      console.log(data)
+    const newFiles = Array.from(e.target.files || [])
+    setFiles((prevFiles) => [...prevFiles, ...newFiles])
+
+    try {
+      const uploadPromises = newFiles.map((file) =>
+        supabase.storage.from("product-image").upload(file.name, file)
+      )
+
+      const results = await Promise.all(uploadPromises)
+
+      const newImageUrls = results
+        .map((result, index) => {
+          if (result.error) {
+            console.error(
+              `Error uploading file ${newFiles[index].name}:`,
+              result.error
+            )
+            return null
+          }
+          const { data } = supabase.storage
+            .from("product-image")
+            .getPublicUrl(result.data!.path)
+          return data.publicUrl
+        })
+        .filter((url): url is string => url !== null)
+
+      setValue("images", [...(form.getValues("images") || []), ...newImageUrls])
+
+      const newPreviewImages = newFiles.map((file) => URL.createObjectURL(file))
+      setPreviewImages((prevImages) => [...prevImages, ...newPreviewImages])
+    } catch (err) {
+      console.error("Error during image upload:", err)
     }
-    const newPreviewImages = files.map((file) => URL.createObjectURL(file))
-    setPreviewImages((prevImages) => [...prevImages, ...newPreviewImages])
   }
 
-  // Remove image
   const removeImage = async (index: number) => {
-    const { name } = files[index]
-    console.log("🚀 ~ removeImage ~ name:", name)
+    const fileToRemove = files[index]
 
-    // const { data, error } = await supabase.storage
-    //   .from("product-image")
-    //   .remove([name])
-    // console.log(error, data)
-    setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index))
+    if (!fileToRemove) return
+
+    try {
+      const { error } = await supabase.storage
+        .from("product-image")
+        .remove([fileToRemove.name])
+
+      if (error) {
+        console.error(`Error removing file ${fileToRemove.name}:`, error)
+      } else {
+        const currentImages = form.getValues("images") || []
+        setValue(
+          "images",
+          currentImages.filter((_, i) => i !== index)
+        )
+        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
+        setPreviewImages((prevImages) =>
+          prevImages.filter((_, i) => i !== index)
+        )
+      }
+    } catch (err) {
+      console.error("Error during image removal:", err)
+    }
   }
-  const { control, handleSubmit, formState } = form
 
-  console.log(formState.errors)
   const onSubmit = (values: z.infer<typeof productSchema>) => {
-    console.log(values)
-    // setTimeout(() => {
-    //   setIsSubmitting(false)
-    //   form.reset()
-    //   setPreviewImages([])
-    // }, 2000)
+    onAddNewProduct(values as any)
   }
   return (
     <div className="w-full mx-auto p-6 space-y-8">
@@ -127,6 +164,7 @@ export default function AddProductForm() {
                       step="0.01"
                       placeholder="0.00"
                       {...field}
+                      value={field.value ?? ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -142,7 +180,7 @@ export default function AddProductForm() {
                 <FormLabel>Category</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  defaultValue={field.value as string}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -165,7 +203,7 @@ export default function AddProductForm() {
             )}
           />
           <FormField
-            control={form.control}
+            control={control}
             name="images"
             render={() => (
               <FormItem>
