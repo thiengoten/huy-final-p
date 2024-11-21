@@ -1,10 +1,9 @@
 import { addProduct, getAllProducts } from "@/api/products"
-import { ProductResponse } from "@/queries/products/products.types"
+import { ProductPayload, ProductResponse } from "@/queries/products/products.types"
 import { PostgrestSingleResponse } from "@supabase/supabase-js"
 import {
   DefaultError,
   InvalidateQueryFilters,
-  MutationFunction,
   UseMutationOptions,
   UseQueryOptions,
   useMutation,
@@ -39,26 +38,27 @@ export const useGetAllProducts = (
 
 export const useAddProduct = (
   options?: UseMutationOptions<
-    PostgrestSingleResponse<ProductResponse>,
+    PostgrestSingleResponse<ProductResponse[]>,
     DefaultError,
-    ProductResponse
+    ProductPayload
   >
 ) => {
   const queryClient = useQueryClient()
 
   const {
-    mutate: addNewProduct,
+    mutate: onAddNewProduct,
     isPending,
     error,
   } = useMutation<
-    PostgrestSingleResponse<ProductResponse>,
+    PostgrestSingleResponse<ProductResponse[]>,
     DefaultError,
-    ProductResponse
+    ProductPayload
   >({
-    mutationFn: addProduct as MutationFunction<
-      PostgrestSingleResponse<ProductResponse>,
-      ProductResponse
-    >,
+    mutationFn: (data: ProductPayload) => {
+      console.log("🚀 ~ data:", data)
+      return addProduct(data)
+    },
+    
     onSuccess: () => {
       queryClient.invalidateQueries(["products"] as InvalidateQueryFilters)
     },
@@ -66,7 +66,7 @@ export const useAddProduct = (
   })
 
   return {
-    addNewProduct,
+    onAddNewProduct,
     isPending,
     error,
   }

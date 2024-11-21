@@ -1,3 +1,7 @@
+import {
+  initValues,
+  loginFormSchema,
+} from "@/components/Auth/login-form.helpers"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -6,19 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { authPaths } from "@/modules/auth"
-import { Eye, EyeOff } from "lucide-react"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  initValues,
-  loginFormSchema,
-} from "@/components/Auth/login-form.helpers"
 import {
   Form,
   FormControl,
@@ -26,7 +17,16 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { authPaths } from "@/modules/auth"
 import { useLogin } from "@/queries/login"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom"
+import { z } from "zod"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -43,9 +43,7 @@ export default function LoginForm() {
     resolver: zodResolver(loginFormSchema),
     defaultValues: initValues,
   })
-
   const { control, handleSubmit } = form
-
   const onSubmit = (values: z.infer<typeof loginFormSchema>) => {
     onLoginUser(values)
   }
