@@ -14,7 +14,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
-          image: string | null
+          images: string | null
           price: string | null
           size: string | null
           title: string | null

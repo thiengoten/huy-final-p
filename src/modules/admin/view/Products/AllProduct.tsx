@@ -1,4 +1,6 @@
+import { deleteProduct, getAllProducts, updateProduct } from "@/api/products"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -6,67 +8,102 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Star } from "lucide-react"
-import { Button } from "../../../../components/ui/button"
+import React, { useEffect } from "react" // Add import for React
+import { z } from "zod"
+import { EditProductDialog } from "./EditProduct"
 
-// Define the structure of a product
-interface Product {
-  id: number
-  name: string
-  price: number
-  rating: number
-  image: string
-}
+const productSchema = z.object({
+  id: z.string(),
+  title: z.string().min(3),
+  description: z.string().min(3),
+  price: z.string().optional(),
+  images: z.array(z.string().url()).optional(),
+  brand: z.string().optional(),
+  size: z.string().optional(),
+  createdAt: z.string().optional(),
+})
 
-// Sample product data
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Air Jordan 1 High OG Chicago Reimagined Lost and Found",
-    price: 79.99,
-    rating: 4.5,
-    image:
-      "https://i.pinimg.com/736x/b3/f2/a2/b3f2a21dda6f97bc8a3f6e50317d4c6d.jpg",
-  },
-  {
-    id: 2,
-    name: "Nike Air Max 1 'Big Bubble'",
-    price: 129.99,
-    rating: 4.8,
-    image:
-      "https://i.pinimg.com/736x/98/1b/31/981b3141681e59ccca66977485f8fed7.jpg",
-  },
-  {
-    id: 3,
-    name: "air max 1",
-    price: 199.99,
-    rating: 4.2,
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 4,
-    name: "superstar",
-    price: 49.99,
-    rating: 4.7,
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 5,
-    name: "yeezy 350",
-    price: 249.99,
-    rating: 4.9,
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 6,
-    name: "yeezy 700",
-    price: 189.99,
-    rating: 4.4,
-    image: "/placeholder.svg?height=200&width=200",
-  },
-]
+type Product = z.infer<typeof productSchema>
 
 export default function AllProduct() {
+  const [products, setProducts] = React.useState<Product[]>([])
+  const [editingProduct, setEditingProduct] = React.useState<Product | null>(
+    null
+  )
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await getAllProducts()
+        console.log("🚀 ~ fetchProducts ~ data:", data)
+        setProducts(data || [])
+      } catch (error) {
+        console.error("Error fetching products:", error)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+  console.log("🚀 ~ AllProduct ~ products:", products)
+
+  const handleEdit = (product: Product) => {
+    setEditingProduct(product)
+  }
+
+  const handleSave = async (updatedProduct: Product) => {
+    try {
+      const { data, error } = await updateProduct(
+        updatedProduct.id,
+        updatedProduct
+      )
+      console.log("🚀 ~ handleSave ~ data:", data)
+      if (error) {
+        throw error
+      }
+
+      // If the update was successful, update the local state
+      setProducts((prevProducts) =>
+        prevProducts.map((p) =>
+          p.id === updatedProduct.id ? updatedProduct : p
+        )
+      )
+      setEditingProduct(null)
+
+      // Optionally, you can show a success message to the user
+      console.log("Product updated successfully")
+    } catch (error) {
+      // Handle any errors that occurred during the update
+      console.error("Error updating product:", error)
+      // Optionally, you can show an error message to the user
+      // For example: setErrorMessage('Failed to update product. Please try again.')
+    }
+  }
+  const handleDelete = async (productId: string) => {
+    try {
+      // Show a confirmation dialog before deleting
+      if (!window.confirm("Are you sure you want to delete this product?")) {
+        return
+      }
+
+      const { error } = await deleteProduct(productId)
+
+      if (error) {
+        throw error
+      }
+
+      // If the deletion was successful, update the local state
+      setProducts((prevProducts) =>
+        prevProducts.filter((p) => p.id !== productId)
+      )
+      console.log("Product deleted successfully")
+    } catch (error) {
+      // Handle any errors that occurred during the deletion
+      console.error("Error deleting product:", error)
+      // Optionally, you can show an error message to the user
+      // For example: setErrorMessage('Failed to delete product. Please try again.')
+    }
+  }
+
   return (
     <div className="mx-auto py-8 pl-20 ">
       <h1 className="text-3xl font-bold mb-6">Our Products</h1>
@@ -74,42 +111,54 @@ export default function AllProduct() {
         {products.map((product) => (
           <Card key={product.id} className="flex flex-col">
             <CardHeader>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <CardTitle className="text-xl mb-2">{product.name}</CardTitle>
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-4 h-4 ${
-                      i < Math.floor(product.rating)
-                        ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-300"
-                    }`}
+              {product.images &&
+                product.images.map((image) => (
+                  <img
+                    key={image}
+                    src={image}
+                    alt={product.title}
+                    className="w-full h-48 object-cover rounded-t-lg"
                   />
                 ))}
-                <span className="ml-2 text-sm text-gray-600">
-                  {product.rating.toFixed(1)}
-                </span>
-              </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <CardTitle className="text-xl mb-2">{product.title}</CardTitle>
               <Badge variant="secondary" className="mb-2">
-                ${product.price.toFixed(2)}
+                ${product.price ? Number(product.price).toFixed(2) : ""}
               </Badge>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Edit</Button>
-              <Button className="w-full" variant="secondary">
+              <Button
+                className="w-full mr-2"
+                onClick={() => handleEdit(product)}
+              >
+                Edit
+              </Button>
+              <Button
+                className="w-full"
+                variant="secondary"
+                onClick={() => handleDelete(product.id)}
+              >
                 Delete
               </Button>
             </CardFooter>
           </Card>
         ))}
       </div>
+      <EditProductDialog
+        product={editingProduct as Product} // Add type assertion to ensure the object has all required properties
+        isOpen={!!editingProduct}
+        onClose={() => setEditingProduct(null)}
+        onSave={(updatedProduct: {
+          id: string
+          title: string
+          description: string
+          price?: string | undefined
+          images?: string[] | undefined
+          brand?: string | undefined
+          size?: string | undefined
+        }) => handleSave(updatedProduct)}
+      />
     </div>
   )
 }

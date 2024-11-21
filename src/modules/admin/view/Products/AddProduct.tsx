@@ -188,11 +188,10 @@ export default function AddProductForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="electronics">Electronics</SelectItem>
-                    <SelectItem value="clothing">Clothing</SelectItem>
-                    <SelectItem value="books">Books</SelectItem>
-                    <SelectItem value="home">Home & Garden</SelectItem>
-                    <SelectItem value="toys">Toys & Games</SelectItem>
+                    <SelectItem value="nike">Nike</SelectItem>
+                    <SelectItem value="adidas">Adidas</SelectItem>
+                    <SelectItem value="puma">Puma</SelectItem>
+                    <SelectItem value="reebok">Reebok</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormDescription>
