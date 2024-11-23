@@ -1,9 +1,11 @@
-import { addProduct, getAllProducts } from "@/api/products"
-import { ProductPayload, ProductResponse } from "@/queries/products/products.types"
-import { PostgrestSingleResponse } from "@supabase/supabase-js"
+import { deleteProduct, getAllProducts, updateProduct, addProduct } from '@/api/products'
+import { ProductPayload } from '@/api/products/helpers'
+import { ProductResponse } from '@/queries/products/products.types'
+import { PostgrestSingleResponse } from '@supabase/supabase-js'
 import {
   DefaultError,
   InvalidateQueryFilters,
+  MutationFunction,
   UseMutationOptions,
   UseQueryOptions,
   useMutation,
@@ -18,7 +20,7 @@ export const useGetAllProducts = (
     ProductResponse[]
   >
 ) => {
-  const { data: productsData } = useQuery<
+  const { data: productsData, isLoading } = useQuery<
     PostgrestSingleResponse<ProductResponse[]>,
     Error,
     ProductResponse[]
@@ -31,16 +33,57 @@ export const useGetAllProducts = (
     ...options,
   })
 
+  const queryClient = useQueryClient();
+
+  const handleInvalidateProducts = (id?: string) => {
+    queryClient.invalidateQueries({ queryKey: ['products'] })
+    if (id) {
+      queryClient.invalidateQueries({ queryKey: ['product', id] })
+    }
+  }
+
   return {
     productsData,
+    isLoading,
+    handleInvalidateProducts,
+  }
+}
+
+type DeleteProductPayload = {
+  id: string
+}
+export const useDeleteProduct = (options?: UseMutationOptions<PostgrestSingleResponse<null>,Error, DeleteProductPayload>) => {
+  const { mutate: onDeleteProduct } = useMutation<PostgrestSingleResponse<null>, Error, DeleteProductPayload>({
+    mutationFn: (payload) => deleteProduct(payload.id),
+    ...options,
+  })
+
+  return {
+    onDeleteProduct,
+  }
+}
+
+type UpdateProductPayload = {
+  id: string
+  product: ProductPayload
+}
+
+export const useUpdateProduct = (options?: UseMutationOptions<PostgrestSingleResponse<null>, Error, UpdateProductPayload>) => {
+  const { mutate: onUpdateProduct } = useMutation<PostgrestSingleResponse<null>, Error, { id: string, product: ProductPayload }>({
+    mutationFn: ({ id, product }) => updateProduct(id, product),
+    ...options,
+  })
+
+  return {
+    onUpdateProduct,
   }
 }
 
 export const useAddProduct = (
   options?: UseMutationOptions<
-    PostgrestSingleResponse<ProductResponse[]>,
+    PostgrestSingleResponse<ProductResponse>,
     DefaultError,
-    ProductPayload
+    ProductResponse
   >
 ) => {
   const queryClient = useQueryClient()
@@ -50,15 +93,14 @@ export const useAddProduct = (
     isPending,
     error,
   } = useMutation<
-    PostgrestSingleResponse<ProductResponse[]>,
+    PostgrestSingleResponse<ProductResponse>,
     DefaultError,
-    ProductPayload
+    ProductResponse
   >({
-    mutationFn: (data: ProductPayload) => {
-      console.log("🚀 ~ data:", data)
-      return addProduct(data)
-    },
-    
+    mutationFn: addProduct as MutationFunction<
+      PostgrestSingleResponse<ProductResponse>,
+      ProductResponse
+    >,
     onSuccess: () => {
       queryClient.invalidateQueries(["products"] as InvalidateQueryFilters)
     },
