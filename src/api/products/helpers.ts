@@ -1,10 +1,4 @@
+import { Tables } from '@/types/database.types'
+
 //Implement type or interface here: example
-export interface Product {
-  id: string
-  title: string
-  description: string
-  amount: number
-  createdAt: string
-  updatedAt: string
-  userId?: string
-}
+export type ProductPayload = Omit<Tables<'Products'>, 'id' | 'created_at'>
