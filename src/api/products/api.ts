@@ -10,7 +10,7 @@ export const addProduct = async (product: ProductPayload) => {
 }
 
 export const getProductById = async (id: string) => {
-  return await supabase.from('Products').select('*').eq('id', id)
+  return await supabase.from('Products').select('*').eq('id', id).single()
 }
 
 export const updateProduct = async (id: string, product: ProductPayload) => {

@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-
+import { useAddProduct } from "@/queries/products"
 import { supabase } from "@/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "lucide-react"
@@ -25,13 +25,20 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { initValues, productSchema } from "./AddProduct.helper"
-import { useAddProduct } from "@/queries/products"
+import { useToast } from "@/hooks/use-toast"
 
 export default function AddProductForm() {
+  const { toast } = useToast()
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [files, setFiles] = useState<File[]>([])
 
-  const { onAddNewProduct } = useAddProduct()
+  const { onAddNewProduct } = useAddProduct({
+    onSuccess: () => {
+      toast({
+        title: "Product added successfully",
+      })
+    },
+  })
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -189,11 +196,10 @@ export default function AddProductForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="electronics">Electronics</SelectItem>
-                    <SelectItem value="clothing">Clothing</SelectItem>
-                    <SelectItem value="books">Books</SelectItem>
-                    <SelectItem value="home">Home & Garden</SelectItem>
-                    <SelectItem value="toys">Toys & Games</SelectItem>
+                    <SelectItem value="nike">Nike</SelectItem>
+                    <SelectItem value="adidas">Adidas</SelectItem>
+                    <SelectItem value="puma">Puma</SelectItem>
+                    <SelectItem value="reebok">Reebok</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormDescription>

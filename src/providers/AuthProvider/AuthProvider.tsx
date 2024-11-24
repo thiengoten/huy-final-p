@@ -7,14 +7,17 @@ import { supabase } from "@/services"
 const AuthContext = createContext<{
   user: User | null
   isLoading: boolean
+  isNewLogin: boolean
 }>({
   user: null,
   isLoading: true,
+  isNewLogin: false,
 })
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isNewLogin, setIsNewLogin] = useState(false)
 
   useEffect(() => {
     // Check active sessions and sets the user
@@ -28,6 +31,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("🚀 ~ useEffect ~ event:", event)
+      if (event === "SIGNED_IN") {
+        setIsNewLogin(true)
+      }
 
       setUser(session?.user ?? null)
       setIsLoading(false)
@@ -37,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, isLoading }}>
+    <AuthContext.Provider value={{ user, isLoading, isNewLogin }}>
       {children}
     </AuthContext.Provider>
   )

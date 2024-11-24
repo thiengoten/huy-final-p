@@ -6,14 +6,21 @@ import { useAuthContext } from "@/providers/AuthProvider/AuthProvider"
 import { useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { ToastAction } from "@/components/ui/toast"
+import { PATHS } from "@/config"
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuthContext()
+  const { user, isLoading, isNewLogin } = useAuthContext()
 
   const navigate = useNavigate()
   const { toast } = useToast()
 
+  const isAdminRoute = useLocation().pathname.startsWith(PATHS.admin)
+
   useEffect(() => {
+    if (!isLoading && isAdminRoute && !user) {
+      return navigate(authPaths.login)
+    }
+
     if (!isLoading && !user) {
       toast({
         title: "Unauthorized",
@@ -30,13 +37,13 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           </ToastAction>
         ),
       })
-    } else {
+    } else if (isNewLogin && user) {
       toast({
-        title: `Welcome back, ${user?.email}`,
+        title: `Welcome back, ${user.email}`,
         description: "You are now logged in",
       })
     }
-  }, [user, isLoading])
+  }, [user, isLoading, isNewLogin])
 
   return <>{children}</>
 }
@@ -44,7 +51,6 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 // src/components/AdminRoute.tsx
 export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuthContext()
-  const location = useLocation()
 
   if (isLoading) {
     return <Spinner />
@@ -54,7 +60,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const isAdmin = user?.user_metadata?.role === "admin"
 
   if (!user || !isAdmin) {
-    return <Navigate to={authPaths.login} state={{ from: location }} replace />
+    return <Navigate to={authPaths.login} replace />
   }
 
   return <>{children}</>
