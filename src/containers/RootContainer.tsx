@@ -31,7 +31,14 @@ const RootContainer = createBrowserRouter(
       <Route path={PATHS.identity} element={<IdentityLayout />}>
         {...identityRoutes}
       </Route>
-      <Route path={PATHS.admin} element={<AdminLayout />}>
+      <Route
+        path={PATHS.admin}
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
         {...adminRoutes}
       </Route>
     </>

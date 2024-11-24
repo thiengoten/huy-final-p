@@ -1,5 +1,6 @@
-import { lazy, useMemo } from "react"
+import { Suspense, lazy, useMemo } from "react"
 import { Outlet, useLocation } from "react-router-dom"
+import { Spinner } from "@/components/ui/spinner"
 
 const Overview = lazy(() => import("@/components/admin/Overview"))
 const AllProduct = lazy(
@@ -32,7 +33,12 @@ const Admin = () => {
     }
     return <Outlet />
   }, [pathname])
-  return <div>{renderForm}</div>
+
+  return (
+    <div>
+      <Suspense fallback={<Spinner />}>{renderForm}</Suspense>
+    </div>
+  )
 }
 
 Admin.Dashboard = Overview

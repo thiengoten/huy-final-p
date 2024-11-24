@@ -1,21 +1,43 @@
 import { DataTable } from "@/components/DataTable"
 import { Spinner } from "@/components/ui/spinner"
+import { useToast } from "@/hooks/use-toast"
 import { allColumns } from "@/modules/admin/view/Products/Products.columns"
-import { useGetAllProducts } from "@/queries/products"
+import EditProductForm from "@/modules/admin/view/Products/Propducts.EditForm"
+
+import { useDialog } from "@/providers/DialogProvider/DialogProvider"
+import {
+  ProductResponse,
+  useDeleteProduct,
+  useGetAllProducts,
+} from "@/queries/products"
 import { useMemo } from "react"
 
 export default function AllProduct() {
-  // const { onDeleteProduct } = useDeleteProduct()
-  const { productsData, isLoading } = useGetAllProducts()
+  const { toast } = useToast()
+  const { openDialog } = useDialog()
 
-  const handleDelete = (product: any) => {
-    console.log("Delete product:", product)
-    // onDeleteProduct({
-    //   id: product.id.toString(),
-    // })
+  const { productsData, isLoading, handleInvalidateProducts } =
+    useGetAllProducts()
+
+  const { onDeleteProduct } = useDeleteProduct({
+    onSuccess: () => {
+      toast({
+        title: "Product deleted successfully",
+      })
+      handleInvalidateProducts()
+    },
+  })
+
+  const handleDelete = (product: ProductResponse) => {
+    onDeleteProduct({
+      id: product.id,
+    })
   }
-  const handleEdit = (product: any) => {
-    console.log("Edit product:", product)
+  const handleEdit = (productId: string) => {
+    openDialog({
+      title: "Edit Product",
+      content: <EditProductForm productId={productId} />,
+    })
   }
 
   const columns = useMemo(() => allColumns(handleEdit, handleDelete), [])

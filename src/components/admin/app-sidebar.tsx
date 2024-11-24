@@ -1,3 +1,5 @@
+import { useTransition } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Sidebar,
   SidebarContent,
@@ -43,9 +45,9 @@ const adminSections = [
     title: "Product",
     icon: Package,
     items: [
-      { title: "All Products", url: "products" },
-      { title: "Add Product", url: "add-product" },
-      { title: "Categories", url: "/products/categories" },
+      { title: "All Products", url: "/admin/products" },
+      { title: "Add Product", url: "/admin/add-product" },
+      { title: "Categories", url: "/admin/products/categories" },
     ],
   },
   {
@@ -69,6 +71,15 @@ const adminSections = [
 ]
 
 export function AppSidebar() {
+  const navigate = useNavigate()
+  const [_isPending, startTransition] = useTransition()
+
+  const handleNavigation = (url: string) => {
+    startTransition(() => {
+      navigate(url)
+    })
+  }
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -118,8 +129,10 @@ export function AppSidebar() {
               <SidebarMenu>
                 {section.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <a href={item.url}>{item.title}</a>
+                    <SidebarMenuButton
+                      onClick={() => handleNavigation(item.url)}
+                    >
+                      {item.title}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

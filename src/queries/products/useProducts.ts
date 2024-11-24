@@ -1,4 +1,4 @@
-import { deleteProduct, getAllProducts, updateProduct, addProduct } from '@/api/products'
+import { deleteProduct, getAllProducts, updateProduct, addProduct, getProductById } from '@/api/products'
 import { ProductPayload } from '@/api/products/helpers'
 import { ProductResponse } from '@/queries/products/products.types'
 import { PostgrestSingleResponse } from '@supabase/supabase-js'
@@ -8,6 +8,7 @@ import {
   MutationFunction,
   UseMutationOptions,
   UseQueryOptions,
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -30,6 +31,9 @@ export const useGetAllProducts = (
     select(data) {
       return data.data || []
     },
+    gcTime: 60 * 1000 * 60, // 1 hour
+    notifyOnChangeProps: ["data", "isFetching"],
+    placeholderData: keepPreviousData,
     ...options,
   })
 
@@ -69,13 +73,24 @@ type UpdateProductPayload = {
 }
 
 export const useUpdateProduct = (options?: UseMutationOptions<PostgrestSingleResponse<null>, Error, UpdateProductPayload>) => {
-  const { mutate: onUpdateProduct } = useMutation<PostgrestSingleResponse<null>, Error, { id: string, product: ProductPayload }>({
+  const { mutate: onUpdateProduct } = useMutation<PostgrestSingleResponse<null>, Error, UpdateProductPayload>({
     mutationFn: ({ id, product }) => updateProduct(id, product),
     ...options,
   })
 
+  const queryClient = useQueryClient()
+
+  const handleInvalidateProducts = (id?: string) => {
+    queryClient.invalidateQueries({ queryKey: ['products'] })
+    if (id) {
+    queryClient.invalidateQueries({ queryKey: ['products'] })
+      queryClient.invalidateQueries({ queryKey: ['product', id] })
+    }
+  }
+
   return {
     onUpdateProduct,
+    handleInvalidateProducts,
   }
 }
 
@@ -111,5 +126,19 @@ export const useAddProduct = (
     onAddNewProduct,
     isPending,
     error,
+  }
+}
+
+export const useGetProductById = (id: string, options?: UseQueryOptions<PostgrestSingleResponse<ProductResponse>, Error, ProductResponse>) => {
+  const { data: productData, isLoading } = useQuery<PostgrestSingleResponse<ProductResponse>, Error, ProductResponse>({
+    queryKey: ['product', id],
+    queryFn: () => getProductById(id),
+    select: (data) => data.data || {} as ProductResponse,
+    ...options,
+  })
+
+  return {
+    productData,
+    isLoading,
   }
 }

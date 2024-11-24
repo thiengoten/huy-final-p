@@ -15,7 +15,7 @@ import { ProductResponse } from "@/queries/products/products.types"
 export type Product = ProductResponse
 
 export const allColumns = (
-  handleEdit: (product: Product) => void,
+  handleEdit: (productId: string) => void,
   handleDelete: (product: Product) => void
 ): ColumnDef<Product>[] => [
   {
@@ -23,7 +23,6 @@ export const allColumns = (
     header: "Image",
     cell: ({ row }) => {
       const images = row.original.images as string[] | null
-      console.log("🚀 ~ images:", images)
       const firstImage =
         images && images.length > 0 ? images[0] : "https://placehold.co/600x400"
       return (
@@ -107,7 +106,7 @@ export const allColumns = (
               Copy product ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleEdit(product)}>
+            <DropdownMenuItem onClick={() => handleEdit(product.id)}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit product
             </DropdownMenuItem>
