@@ -1,5 +1,5 @@
-import { useCart } from "@/context/CardContext"
 import { authPaths } from "@/modules/auth"
+import { useCart } from "@/providers/CardProvider/CardProvider"
 import { useNavigate } from "react-router-dom"
 import { ModeToggle } from "./mode-toggle"
 import { Button } from "./ui/button"
@@ -8,21 +8,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 const Navbar = () => {
   const navigate = useNavigate()
   const { cart, updateQuantity } = useCart()
-  const totalPrice = cart.reduce(
-    (total: number, item: any) =>
-      total + (item.price ? parseFloat(item.price) : 0),
-    0
-  )
-  console.log("🚀 ~ Navbar ~ totalPrice:", totalPrice)
 
   return (
     <nav className="">
       <div className="container mx-auto flex p-4 items-center space-x-6 ">
-        {/* Logo */}
         <div className="font-bold ">
           <a href="/">SNEAKERZONE</a>
         </div>
-        {/* Menu Links */}
         <div className="hidden md:flex space-x-6  items-center justify-between">
           <a href="#">Home</a>
 
@@ -43,7 +35,6 @@ const Navbar = () => {
                 <p className="text-sm text-gray-500">Your cart is empty.</p>
               ) : (
                 <>
-                  {/* Cart Items */}
                   <ul className="space-y-4">
                     {cart.map((item: any, index: number) => (
                       <li key={index} className="p-2 rounded-md border">
@@ -88,13 +79,9 @@ const Navbar = () => {
                             </div>
                           </div>
                         </div>
-                        {/* Product Image */}
-
-                        {/* Quantity Selector */}
                       </li>
                     ))}
                   </ul>
-                  {/* Total Price */}
                   <div className="mt-4 border-t pt-4">
                     <p className="text-lg font-semibold text-gray-800">
                       Total: $
@@ -107,7 +94,6 @@ const Navbar = () => {
                         .toFixed(2)}
                     </p>
                   </div>
-                  {/* Payment Button */}
                   <Button
                     className="mt-4 w-full"
                     onClick={() => alert("Proceed to payment")}

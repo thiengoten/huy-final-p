@@ -1,20 +1,20 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Link } from "react-router-dom"
 
 export default function LoginForm() {
   return (
     <div className="flex h-[80vh] w-full items-center justify-center">
       <Card className="flex w-full max-w-4xl overflow-hidden">
-        <div className="flex-1 p-6 flex flex-col items-stretch  items-center justify-center">
+        <div className="flex-1 p-6 flex flex-col items-center justify-center">
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
@@ -70,5 +70,5 @@ export default function LoginForm() {
         </div>
       </Card>
     </div>
-  );
+  )
 }

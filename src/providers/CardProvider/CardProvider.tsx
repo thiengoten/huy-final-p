@@ -8,7 +8,7 @@ export const useCart = () => useContext(CartContext)
 
 type Props = React.PropsWithChildren<{}> & {}
 
-export const CartProvider = ({ children }: Props) => {
+export default function CartProvider({ children }: Props) {
   const [cart, setCart] = useState<any[]>([])
   const addToCart = (product: any) => {
     setCart((prevCart) => {

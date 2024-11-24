@@ -6,8 +6,8 @@ type ProductImageCarouselProps = {
 export default function ProductImageCarousel({
   images,
 }: ProductImageCarouselProps) {
-  const [selectedImage, setSelectedImage] = useState(images[0])
-  console.log(images)
+  const [selectedImage, setSelectedImage] = useState(images ? images[0] : "")
+  
   return (
     <div className="flex flex-col items-center">
       {/* Main Image */}
@@ -21,7 +21,7 @@ export default function ProductImageCarousel({
 
       {/* Thumbnails */}
       <div className="flex space-x-2">
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <button
             key={index}
             onClick={() => setSelectedImage(image)}

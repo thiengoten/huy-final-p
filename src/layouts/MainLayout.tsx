@@ -1,10 +1,12 @@
 import Navbar from "@/components/Navbar"
-import { CartProvider } from "@/context/CardContext"
-
+import { Toaster } from "@/components/ui/toaster"
+import CartProvider from "@/providers/CardProvider/CardProvider"
 import { Outlet } from "react-router-dom"
+
 const MainLayout = () => {
   return (
     <>
+      {/* TODO: can implement navbar if want */}
       <CartProvider>
         <header>
           <Navbar />
@@ -12,6 +14,9 @@ const MainLayout = () => {
         <main className="container">
           <Outlet />
         </main>
+        {/* TODO: can implement footer if want */}
+        <footer></footer>
+        <Toaster />
       </CartProvider>
     </>
   )
