@@ -1,16 +1,29 @@
+import { signOut } from "@/api/auths"
+import { useToast } from "@/hooks/use-toast"
 import { authPaths } from "@/modules/auth"
+import { homePaths } from "@/modules/home"
+import { useAuthContext } from "@/providers/AuthProvider/AuthProvider"
 import { useCart } from "@/providers/CardProvider/CardProvider"
-import { useNavigate } from "react-router-dom"
-import { ModeToggle } from "./mode-toggle"
-import { Button } from "./ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
-import { useMemo } from "react"
 import {
   useCreateOrder,
   useCreateOrderDetail,
 } from "@/queries/orders/useOrders"
-import { useAuthContext } from "@/providers/AuthProvider/AuthProvider"
-import { useToast } from "@/hooks/use-toast"
+import { useMemo } from "react"
+import { useNavigate } from "react-router-dom"
+import { ModeToggle } from "./mode-toggle"
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import { Button } from "./ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -62,7 +75,14 @@ const Navbar = () => {
       })
     }
   }
-
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      navigate(authPaths.login)
+    } catch (error) {
+      console.error("Error logging out", error)
+    }
+  }
   return (
     <nav className="">
       <div className="container mx-auto flex p-4 items-center space-x-6 ">
@@ -151,8 +171,44 @@ const Navbar = () => {
               )}
             </PopoverContent>
           </Popover>
-
-          <Button onClick={() => navigate(authPaths.login)}>Login</Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-8 w-8 rounded-full">
+                  <Avatar>
+                    <AvatarImage
+                      src={`https://api.dicebear.com/7.x/micah/svg/backgroundColor=b6e3f4,c0aede,d1d4f9?seed=${user?.email}`}
+                      alt="@shadcn"
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel className="text-ellipsis overflow-hidden">
+                  {user?.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => navigate(homePaths.profile)}>
+                    Profile
+                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate(homePaths.home)}>
+                    Home
+                    <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  Log out
+                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button onClick={() => navigate(authPaths.login)}>Login</Button>
+          )}
         </div>
         <ModeToggle />
       </div>
