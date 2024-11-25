@@ -1,7 +1,25 @@
 import React, { createContext, useContext, useState } from "react"
 
+type Cart = {
+  images: string[]
+  title: string
+  price: number
+  quantity: number
+  id: string
+}
+
+type CartContextType = {
+  cart: Cart[]
+  addToCart: (product: any) => void
+  updateQuantity: (productId: string, newQuantity: number) => void
+}
+
 // Define Cart Context
-const CartContext = createContext<any>(null)
+const CartContext = createContext<CartContextType>({
+  cart: [],
+  addToCart: () => {},
+  updateQuantity: () => {},
+})
 
 // Custom Hook for easier access
 export const useCart = () => useContext(CartContext)
@@ -9,8 +27,8 @@ export const useCart = () => useContext(CartContext)
 type Props = React.PropsWithChildren<{}> & {}
 
 export default function CartProvider({ children }: Props) {
-  const [cart, setCart] = useState<any[]>([])
-  const addToCart = (product: any) => {
+  const [cart, setCart] = useState<Cart[]>([])
+  const addToCart = (product: Cart) => {
     setCart((prevCart) => {
       // Check if the product already exists in the cart
       const existingProduct = prevCart.find((item) => item.id === product.id)

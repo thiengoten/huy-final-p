@@ -4,10 +4,64 @@ import { useNavigate } from "react-router-dom"
 import { ModeToggle } from "./mode-toggle"
 import { Button } from "./ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { useMemo } from "react"
+import {
+  useCreateOrder,
+  useCreateOrderDetail,
+} from "@/queries/orders/useOrders"
+import { useAuthContext } from "@/providers/AuthProvider/AuthProvider"
+import { useToast } from "@/hooks/use-toast"
 
 const Navbar = () => {
   const navigate = useNavigate()
   const { cart, updateQuantity } = useCart()
+  const { toast } = useToast()
+  const { onAddNewOrder } = useCreateOrder({
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+      })
+    },
+  })
+  const { onAddNewOrderDetail } = useCreateOrderDetail({
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Order created successfully",
+      })
+    },
+  })
+  const { user } = useAuthContext()
+
+  const totalPrice = useMemo(() => {
+    return cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+  }, [cart])
+
+  const handleProceedToPayment = async () => {
+    const { data, error } = await onAddNewOrder({
+      user_id: user?.id as string,
+      order_status: "pending",
+      total: totalPrice,
+    })
+    if (error) return
+
+    const { error: orderDetailError } = await onAddNewOrderDetail(
+      cart.map((item) => ({
+        order_id: data?.id,
+        product_id: item.id,
+        quantity: item.quantity,
+        image: item.images?.[0],
+      }))
+    )
+    if (orderDetailError) {
+      return toast({
+        title: "Error",
+        variant: "destructive",
+        description: orderDetailError.message,
+      })
+    }
+  }
 
   return (
     <nav className="">
@@ -36,7 +90,7 @@ const Navbar = () => {
               ) : (
                 <>
                   <ul className="space-y-4">
-                    {cart.map((item: any, index: number) => (
+                    {cart.map((item, index: number) => (
                       <li key={index} className="p-2 rounded-md border">
                         <div className="flex items-center space-x-4">
                           {item.images && (
@@ -84,19 +138,12 @@ const Navbar = () => {
                   </ul>
                   <div className="mt-4 border-t pt-4">
                     <p className="text-lg font-semibold text-gray-800">
-                      Total: $
-                      {cart
-                        .reduce(
-                          (total: number, item: any) =>
-                            total + item.price * item.quantity,
-                          0
-                        )
-                        .toFixed(2)}
+                      Total: ${totalPrice}
                     </p>
                   </div>
                   <Button
                     className="mt-4 w-full"
-                    onClick={() => alert("Proceed to payment")}
+                    onClick={handleProceedToPayment}
                   >
                     Proceed to Payment
                   </Button>
