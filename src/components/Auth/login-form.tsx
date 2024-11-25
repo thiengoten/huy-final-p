@@ -1,3 +1,4 @@
+import { signInWithProvider } from "@/api/auths"
 import {
   initValues,
   loginFormSchema,
@@ -51,7 +52,9 @@ export default function LoginForm() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
-
+  const handleLoginWithGG = () => {
+    signInWithProvider()
+  }
   return (
     <Form {...form}>
       <div className="flex h-[80vh] w-full items-center justify-center">
@@ -135,7 +138,11 @@ export default function LoginForm() {
                 <Button type="submit" className="w-full">
                   Login
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button
+                  onClick={handleLoginWithGG}
+                  variant="outline"
+                  className="w-full"
+                >
                   Login with Google
                 </Button>
                 <div className="mt-4 text-center text-sm">
