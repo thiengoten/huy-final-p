@@ -14,6 +14,7 @@ export type Database = {
           created_at: string
           id: number
           image: string | null
+          order_id: number | null
           product_id: string | null
           quantity: number | null
         }
@@ -21,17 +22,26 @@ export type Database = {
           created_at?: string
           id?: number
           image?: string | null
-          product_id?: string | null
+          order_id?: number | null
+          product_id?: string | null | Tables<'Products'>
           quantity?: number | null
         }
         Update: {
           created_at?: string
           id?: number
           image?: string | null
+          order_id?: number | null
           product_id?: string | null
           quantity?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "order_detail_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "order_detail_product_id_fkey"
             columns: ["product_id"]
