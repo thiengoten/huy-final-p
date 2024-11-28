@@ -1,4 +1,3 @@
-
 import { OrderDetailPayload, OrderPayload } from "@/queries/orders/orders.types"
 import { supabase } from "@/services"
 
@@ -32,6 +31,8 @@ export const deleteOrder = async (id: string) => {
 export const getOrderByUserId = async (userId: string) => {
   return await supabase
     .from("orders")
-    .select("id, created_at, order_status, total, order_detail(id, product_id(id, title, price, images))")
+    .select(
+      "id, created_at, order_status, total, order_detail(id, quantity, product_id(id, title, price, images))"
+    )
     .eq("user_id", userId)
 }

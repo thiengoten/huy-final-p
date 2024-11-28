@@ -190,7 +190,9 @@ const Navbar = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => navigate(homePaths.profile)}>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/profile/" + user?.id)}
+                  >
                     Profile
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>

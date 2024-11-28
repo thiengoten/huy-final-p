@@ -6,7 +6,7 @@ import ProfileUser from "./home.user/ProfileUser"
 export const homePaths = {
   home: `${PREFIX_ROUTE}/`,
   details: `${PREFIX_ROUTE}/product/:id`,
-  profile: `${PREFIX_ROUTE}/profile`,
+  profile: `${PREFIX_ROUTE}/profile/:id`,
 }
 
 export const homeRoutes = [
