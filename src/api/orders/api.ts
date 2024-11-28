@@ -32,6 +32,6 @@ export const deleteOrder = async (id: string) => {
 export const getOrderByUserId = async (userId: string) => {
   return await supabase
     .from("orders")
-    .select("*")
+    .select("id, created_at, order_status, total, order_detail(id, product_id(id, title, price, images))")
     .eq("user_id", userId)
 }

@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useCart } from "@/providers/CardProvider/CardProvider"
+import { useGetOrderByUserId } from "@/queries/orders/useOrders"
 import { useGetAllProducts } from "@/queries/products"
 import { Link } from "react-router-dom"
 
@@ -16,7 +17,11 @@ type Props = {}
 const UserHomeContainer = ({}: Props) => {
   const { addToCart } = useCart()
   const { productsData, isLoading } = useGetAllProducts()
+  const { orderData } = useGetOrderByUserId(
+    "5af5fba1-c7fd-44a9-a75c-06c27ce1a366"
+  )
 
+  console.log("🚀 ~ UserHomeContainer ~ orderData:", orderData)
   return isLoading ? (
     <div className="flex items-center justify-center">
       <div className="w-45 h-40 bg-gradient-to-b from-transparent via-white to-transparent animate-matrix" />

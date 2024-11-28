@@ -45,7 +45,7 @@ export const useGetOrders = (options?: UseQueryOptions<PostgrestSingleResponse<O
 export const useGetOrderByUserId = (userId: string, options?: UseQueryOptions<PostgrestSingleResponse<OrderResponse[]>, DefaultError>) => {
   const { data: orderData, isLoading, isError } = useQuery({
     queryKey: ["orders", userId],
-    queryFn: () => getOrderByUserId(userId),
+    queryFn: () => getOrderByUserId(userId) as any,
     ...options,
   })
 
