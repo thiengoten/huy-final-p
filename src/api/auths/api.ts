@@ -1,4 +1,4 @@
-import { supabase } from "@/services"
+import supabaseAdmin, { supabase } from "@/services"
 import { VITE_LOCAL } from "@/utils"
 
 export const signUp = async (email: string, password: string) => {
@@ -36,4 +36,8 @@ export const signOut = async () => {
     console.error("Error during sign-out:", error)
     throw error
   }
+}
+
+export const getUser = async () => {
+  return await supabaseAdmin.auth.admin.listUsers()
 }

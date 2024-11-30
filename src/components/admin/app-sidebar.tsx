@@ -14,12 +14,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu"
 import { Label } from "@radix-ui/react-label"
 import {
   Home,
@@ -31,6 +25,12 @@ import {
   ShoppingCart,
   Users,
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const adminSections = [
   {
@@ -53,11 +53,7 @@ const adminSections = [
   {
     title: "Manage User",
     icon: Users,
-    items: [
-      { title: "All Users", url: "users" },
-      { title: "Add User", url: "/users/add" },
-      { title: "User Roles", url: "/users/roles" },
-    ],
+    items: [{ title: "All Users", url: "users" }],
   },
   {
     title: "Manage Order",
