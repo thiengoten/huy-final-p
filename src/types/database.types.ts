@@ -11,7 +11,7 @@ export type Database = {
     Tables: {
       order_detail: {
         Row: {
-          created_at: string
+          created_at: string | null
           id: number
           image: string | null
           order_id: number | null
@@ -19,7 +19,7 @@ export type Database = {
           quantity: number | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           id?: number
           image?: string | null
           order_id?: number | null

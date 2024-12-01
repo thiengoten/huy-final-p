@@ -12,7 +12,7 @@ export function UserInformation() {
   const { user } = useAuthContext()
   dayjs.extend(utc)
 
-  const timestamp = "2024-11-25T20:09:19.456282Z"
+  const timestamp = user?.created_at
   const date = dayjs(timestamp)
 
   return (
@@ -35,9 +35,11 @@ export function UserInformation() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h2 className="text-2xl font-bold">
-              {user?.identities![0].identity_data?.full_name}
-            </h2>
+            {user?.identities![0].identity_data?.full_name ? (
+              <h2 className="text-2xl font-bold">
+                {user?.identities![0].identity_data?.full_name}
+              </h2>
+            ) : null}
             <p className="text-muted-foreground">
               Member since {date.format("YYYY-MM-DD")}
             </p>

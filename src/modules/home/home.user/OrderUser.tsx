@@ -7,6 +7,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible"
+import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
 import { ChevronDown, ChevronUp, Package, Truck } from "lucide-react"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
@@ -17,6 +19,7 @@ export function UserOrders() {
   let param = useParams()
 
   const { orderData } = useGetOrderByUserId(param.id as string)
+  console.log("🚀 ~ UserOrders ~ orderData:", orderData)
 
   const toggleItem = (id: string) => {
     setOpenItems((current) =>
@@ -25,6 +28,14 @@ export function UserOrders() {
         : [...current, id]
     )
   }
+  dayjs.extend(utc)
+  const formattedOrders = (orderData?.data || []).map((order: any) => {
+    return {
+      ...order,
+      formatted_date: dayjs(order.created_at).format("YYYY-MM-DD"),
+    }
+  })
+  
   return (
     <Card className="w-full shadow-lg hover:shadow-2xl transition-shadow duration-300">
       <CardHeader>
@@ -32,7 +43,7 @@ export function UserOrders() {
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[400px] pr-4">
-          {orderData?.data?.map((order) => (
+          {formattedOrders?.map((order: any) => (
             <Collapsible
               key={order.id}
               open={openItems.includes(order.id.toString())}
@@ -62,7 +73,7 @@ export function UserOrders() {
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground mb-2">
-                    Order Date: {order.created_at}
+                    Order Date : {order.formatted_date}
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center">
@@ -73,8 +84,8 @@ export function UserOrders() {
                       )}
                       <span>
                         {order.order_status === "Delivered"
-                          ? `Delivered on ${order.created_at}`
-                          : `Estimated delivery: ${order.created_at}`}
+                          ? `Delivered on ${order.formatted_date}`
+                          : `Estimated delivery: ${order.formatted_date}`}
                       </span>
                     </div>
                     <div className="font-semibold">
