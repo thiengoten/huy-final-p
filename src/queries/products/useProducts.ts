@@ -1,4 +1,4 @@
-import { deleteProduct, getAllProducts, updateProduct, addProduct, getProductById } from '@/api/products'
+import { deleteProduct, getAllProducts, updateProduct, addProduct, getProductById, textSearch } from '@/api/products'
 import { ProductPayload } from '@/api/products/helpers'
 import { ProductResponse } from '@/queries/products/products.types'
 import { PostgrestSingleResponse } from '@supabase/supabase-js'
@@ -139,6 +139,18 @@ export const useGetProductById = (id: string, options?: UseQueryOptions<Postgres
 
   return {
     productData,
+    isLoading,
+  }
+}
+export const useTextSearch = (text: string, options?: UseQueryOptions<PostgrestSingleResponse<ProductResponse[]>, Error, ProductResponse[]>) => {
+  const { data: productsData, isLoading } = useQuery<PostgrestSingleResponse<ProductResponse[]>, Error, ProductResponse[]>({
+    queryKey: ['products', text],
+    queryFn: () => textSearch(text),
+    select: (data) => data.data || [],
+    ...options,
+  })
+  return {
+    productsData,
     isLoading,
   }
 }

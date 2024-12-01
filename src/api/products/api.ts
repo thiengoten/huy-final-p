@@ -20,3 +20,6 @@ export const updateProduct = async (id: string, product: ProductPayload) => {
 export const deleteProduct = async (id: string) => {
   return await supabase.from('Products').delete().eq('id', id)
 }
+export const textSearch = async (text: string) => {
+  return await supabase.from('Products').select('*').textSearch('title', text)
+}

@@ -12,6 +12,7 @@ type CartContextType = {
   cart: Cart[]
   addToCart: (product: any) => void
   updateQuantity: (productId: string, newQuantity: number) => void
+  deleteFromCart: (productId: string) => void
 }
 
 // Define Cart Context
@@ -19,6 +20,7 @@ const CartContext = createContext<CartContextType>({
   cart: [],
   addToCart: () => {},
   updateQuantity: () => {},
+  deleteFromCart: () => {},
 })
 
 // Custom Hook for easier access
@@ -56,8 +58,13 @@ export default function CartProvider({ children }: Props) {
       )
     )
   }
+  const deleteFromCart = (productId: string) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId))
+  }
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQuantity }}>
+    <CartContext.Provider
+      value={{ cart, addToCart, updateQuantity, deleteFromCart }}
+    >
       {children}
     </CartContext.Provider>
   )
