@@ -36,3 +36,11 @@ export const getOrderByUserId = async (userId: string) => {
     )
     .eq("user_id", userId)
 }
+
+export const updateOrderStatus = async (id: string, status: string) => {
+  return await supabase.from("orders").update({ order_status: status }).eq("id", id)
+}
+
+export const getOrderById = async (id: string) => {
+  return await supabase.from("orders").select("*").eq("id", id).single()
+}

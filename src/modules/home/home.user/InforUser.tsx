@@ -27,9 +27,10 @@ export function UserInformation() {
               src={`https://api.dicebear.com/7.x/micah/svg/backgroundColor=b6e3f4,c0aede,d1d4f9?seed=${user?.email}`}
               alt="@shadcn"
             />
+
             <AvatarFallback>
               {user
-                ?.identities![0].identity_data?.full_name.split(" ")
+                ?.identities![0].identity_data?.full_name?.split(" ")
                 .map((n: string) => n[0])
                 .join("")}
             </AvatarFallback>

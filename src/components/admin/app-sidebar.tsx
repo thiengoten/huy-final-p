@@ -47,7 +47,6 @@ const adminSections = [
     items: [
       { title: "All Products", url: "/admin/products" },
       { title: "Add Product", url: "/admin/add-product" },
-      { title: "Categories", url: "/admin/products/categories" },
     ],
   },
   {
@@ -58,11 +57,7 @@ const adminSections = [
   {
     title: "Manage Order",
     icon: ShoppingCart,
-    items: [
-      { title: "All Orders", url: "orders" },
-      { title: "Pending Orders", url: "/orders/pending" },
-      { title: "Completed Orders", url: "/orders/completed" },
-    ],
+    items: [{ title: "All Orders", url: "orders" }],
   },
 ]
 

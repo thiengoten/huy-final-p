@@ -1,8 +1,8 @@
 
-import { createOrder, createOrderDetail, getOrderByUserId, getOrderDetailByOrderId, getOrders } from "@/api/orders"
+import { createOrder, createOrderDetail, getOrderById, getOrderByUserId, getOrderDetailByOrderId, getOrders, updateOrderStatus } from "@/api/orders"
 import { OrderDetailPayload, OrderPayload, OrderResponse } from "@/queries/orders/orders.types"
 import { PostgrestSingleResponse } from "@supabase/supabase-js"
-import { DefaultError, useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@tanstack/react-query"
+import { DefaultError, useMutation, UseMutationOptions, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query"
 
 
 export const useCreateOrder = (options?: UseMutationOptions<PostgrestSingleResponse<OrderResponse>, DefaultError, OrderPayload>) => {
@@ -29,14 +29,14 @@ export const useCreateOrderDetail = (options?: UseMutationOptions<PostgrestSingl
 }
 
 export const useGetOrders = (options?: UseQueryOptions<PostgrestSingleResponse<OrderResponse[]>, DefaultError>) => {
-  const { data, isLoading, isError } = useQuery({
+  const { data: orderData, isLoading, isError } = useQuery({
     queryKey: ["orders"],
-    queryFn: () => getOrders(),
+    queryFn: () => getOrders() as any,
     ...options,
   })
 
   return {
-    data,
+    orderData,
     isLoading,
     isError,
   }
@@ -70,3 +70,37 @@ export const useGetOrderDetailByOrderId = (orderId: string, options?: UseQueryOp
   }
 }
   
+export const useGetOrderById = (id: string, options?: UseQueryOptions<PostgrestSingleResponse<OrderResponse>, DefaultError>) => {
+  const { data: orderData, isLoading, isError } = useQuery({
+    queryKey: ["order", id],
+    queryFn: () => getOrderById(id) as any,
+    ...options,
+    select: (data) => data.data,
+  })
+
+  return {
+    orderData,
+    isLoading,
+    isError,
+  }
+}
+export const useUpdateOrderStatus = (options?: UseMutationOptions<PostgrestSingleResponse<null>, DefaultError, { id: string; status: string }>) => {
+  const { mutate: onUpdateOrderStatus } = useMutation({
+    mutationFn: (payload) => updateOrderStatus(payload.id, payload.status),
+    ...options,
+  })
+
+  const queryClient = useQueryClient()
+
+  const handleInvalidateOrders = (id?: string) => {
+    queryClient.invalidateQueries({ queryKey: ["orders"] })
+    if (id) {
+      queryClient.invalidateQueries({ queryKey: ["order", id] })
+    }
+  }
+
+  return {
+    onUpdateOrderStatus,
+    handleInvalidateOrders,
+  }
+}
