@@ -54,31 +54,40 @@ export function Search({ open, onOpenChange }: SearchProps) {
         placeholder="Search products..."
         value={searchQuery}
         onValueChange={setSearchQuery}
+        className="border-none focus:ring-0"
       />
-      <CommandList>
-        <CommandEmpty>No products found.</CommandEmpty>
-        {isLoading && <CommandItem>Loading products...</CommandItem>}
+      <CommandList className="max-h-[400px] overflow-y-auto">
+        <CommandEmpty className="py-6 text-center text-sm">
+          No products found.
+        </CommandEmpty>
+        {isLoading && (
+          <CommandItem className="py-4 text-center text-sm">
+            Loading products...
+          </CommandItem>
+        )}
         <CommandGroup heading="Products">
           {filteredProducts().map((product) => (
             <CommandItem
               key={product.id}
-              className="flex items-center gap-3"
               onSelect={() => handleProductClick(product.id)}
+              className="flex items-center gap-3 p-3 cursor-pointer hover:bg-accent"
             >
               <div className="flex items-center gap-3 flex-1">
-                <div className="relative w-12 h-12 overflow-hidden rounded-md">
+                <div className="relative w-12 h-12 flex-shrink-0 overflow-hidden rounded-md border border-border">
                   {product.images && (
                     <img
                       src={product.images[0]}
                       alt={product.title ? String(product.title) : "product"}
-                      className="w-full h-48 object-cover rounded-t-lg"
+                      className="h-full w-full object-cover"
                     />
                   )}
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-medium">{product.title}</span>
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium text-sm line-clamp-1">
+                    {product.title}
+                  </span>
                   <span className="text-sm text-muted-foreground">
-                    ${product.price}
+                    ${Number(product.price).toFixed(2)}
                   </span>
                 </div>
               </div>

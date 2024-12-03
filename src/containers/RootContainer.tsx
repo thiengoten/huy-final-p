@@ -1,9 +1,15 @@
 import { ProtectedRoute } from "@/components/CustomRoute/CustomRoute"
 import { PATHS } from "@/config"
-import { AdminLayout, IdentityLayout, MainLayout } from "@/layouts"
+import {
+  AdminLayout,
+  IdentityLayout,
+  MainLayout,
+  NotifyLayout,
+} from "@/layouts"
 import { adminRoutes as admRoutes } from "@/modules/admin"
 import { authRoutes } from "@/modules/auth"
 import { homeRoutes } from "@/modules/home"
+import { notifyRoutes } from "@/modules/notify"
 import {
   Route,
   createBrowserRouter,
@@ -40,6 +46,9 @@ const RootContainer = createBrowserRouter(
         }
       >
         {...adminRoutes}
+      </Route>
+      <Route path={PATHS.notify} element={<NotifyLayout />}>
+        {...notifyRoutes}
       </Route>
     </>
   )

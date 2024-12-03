@@ -1,6 +1,6 @@
+import { Spinner } from "@/components/ui/spinner"
 import { Suspense, lazy, useMemo } from "react"
 import { Outlet, useLocation } from "react-router-dom"
-import { Spinner } from "@/components/ui/spinner"
 
 const Overview = lazy(() => import("@/components/admin/Overview"))
 const AllProduct = lazy(
