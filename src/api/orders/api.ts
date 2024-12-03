@@ -1,5 +1,5 @@
 import { OrderDetailPayload, OrderPayload } from "@/queries/orders/orders.types"
-import { supabase } from "@/services"
+import { axiosInstance, supabase } from "@/services"
 
 export const createOrder = async (order: OrderPayload) => {
   return await supabase.from("orders").insert(order).select().single()
@@ -43,4 +43,8 @@ export const updateOrderStatus = async (id: string, status: string) => {
 
 export const getOrderById = async (id: string) => {
   return await supabase.from("orders").select("*").eq("id", id).single()
+}
+
+export const testApi = async (data: any) => {
+  return await axiosInstance.post("/checkout", data)
 }

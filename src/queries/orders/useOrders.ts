@@ -1,5 +1,5 @@
 
-import { createOrder, createOrderDetail, getOrderById, getOrderByUserId, getOrderDetailByOrderId, getOrders, updateOrderStatus } from "@/api/orders"
+import { createOrder, createOrderDetail, getOrderById, getOrderByUserId, getOrderDetailByOrderId, getOrders, testApi, updateOrderStatus } from "@/api/orders"
 import { OrderDetailPayload, OrderPayload, OrderResponse } from "@/queries/orders/orders.types"
 import { PostgrestSingleResponse } from "@supabase/supabase-js"
 import { DefaultError, useMutation, UseMutationOptions, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query"
@@ -102,5 +102,20 @@ export const useUpdateOrderStatus = (options?: UseMutationOptions<PostgrestSingl
   return {
     onUpdateOrderStatus,
     handleInvalidateOrders,
+  }
+}
+
+type TestApiResponse = {
+  clientUrl: string
+}
+
+export const useTestApi = (options?: UseMutationOptions<TestApiResponse, DefaultError, any>) => {
+  const { mutateAsync: onTestApi } = useMutation({
+    mutationFn: (payload) => testApi(payload) as any,
+    ...options,
+  })
+
+  return {
+    onTestApi,
   }
 }

@@ -8,6 +8,7 @@ import { useCart } from "@/providers/CardProvider/CardProvider"
 import {
   useCreateOrder,
   useCreateOrderDetail,
+  useTestApi,
 } from "@/queries/orders/useOrders"
 import { CircleX } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -33,6 +34,7 @@ const Navbar = () => {
   const navigate = useNavigate()
   const { cart, updateQuantity, deleteFromCart } = useCart()
   const { toast } = useToast()
+  const { onTestApi } = useTestApi()
   const { onAddNewOrder } = useCreateOrder({
     onError: (error) => {
       toast({
@@ -79,6 +81,10 @@ const Navbar = () => {
         description: orderDetailError.message,
       })
     }
+    const { clientUrl } = await onTestApi({
+      products: cart,
+    })
+    window.location.href = clientUrl
   }
 
   const handleRemoveCart = (productId: string) => {
