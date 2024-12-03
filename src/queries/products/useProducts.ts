@@ -1,7 +1,13 @@
-import { deleteProduct, getAllProducts, updateProduct, addProduct, getProductById, textSearch } from '@/api/products'
-import { ProductPayload } from '@/api/products/helpers'
-import { ProductResponse } from '@/queries/products/products.types'
-import { PostgrestSingleResponse } from '@supabase/supabase-js'
+import {
+  addProduct,
+  deleteProduct,
+  getAllProducts,
+  getProductById,
+  updateProduct,
+} from "@/api/products"
+import { ProductPayload } from "@/api/products/helpers"
+import { ProductResponse } from "@/queries/products/products.types"
+import { PostgrestSingleResponse } from "@supabase/supabase-js"
 import {
   DefaultError,
   InvalidateQueryFilters,
@@ -37,12 +43,12 @@ export const useGetAllProducts = (
     ...options,
   })
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const handleInvalidateProducts = (id?: string) => {
-    queryClient.invalidateQueries({ queryKey: ['products'] })
+    queryClient.invalidateQueries({ queryKey: ["products"] })
     if (id) {
-      queryClient.invalidateQueries({ queryKey: ['product', id] })
+      queryClient.invalidateQueries({ queryKey: ["product", id] })
     }
   }
 
@@ -56,8 +62,18 @@ export const useGetAllProducts = (
 type DeleteProductPayload = {
   id: string
 }
-export const useDeleteProduct = (options?: UseMutationOptions<PostgrestSingleResponse<null>,Error, DeleteProductPayload>) => {
-  const { mutate: onDeleteProduct } = useMutation<PostgrestSingleResponse<null>, Error, DeleteProductPayload>({
+export const useDeleteProduct = (
+  options?: UseMutationOptions<
+    PostgrestSingleResponse<null>,
+    Error,
+    DeleteProductPayload
+  >
+) => {
+  const { mutate: onDeleteProduct } = useMutation<
+    PostgrestSingleResponse<null>,
+    Error,
+    DeleteProductPayload
+  >({
     mutationFn: (payload) => deleteProduct(payload.id),
     ...options,
   })
@@ -72,8 +88,18 @@ type UpdateProductPayload = {
   product: ProductPayload
 }
 
-export const useUpdateProduct = (options?: UseMutationOptions<PostgrestSingleResponse<null>, Error, UpdateProductPayload>) => {
-  const { mutate: onUpdateProduct } = useMutation<PostgrestSingleResponse<null>, Error, UpdateProductPayload>({
+export const useUpdateProduct = (
+  options?: UseMutationOptions<
+    PostgrestSingleResponse<null>,
+    Error,
+    UpdateProductPayload
+  >
+) => {
+  const { mutate: onUpdateProduct } = useMutation<
+    PostgrestSingleResponse<null>,
+    Error,
+    UpdateProductPayload
+  >({
     mutationFn: ({ id, product }) => updateProduct(id, product),
     ...options,
   })
@@ -81,10 +107,10 @@ export const useUpdateProduct = (options?: UseMutationOptions<PostgrestSingleRes
   const queryClient = useQueryClient()
 
   const handleInvalidateProducts = (id?: string) => {
-    queryClient.invalidateQueries({ queryKey: ['products'] })
+    queryClient.invalidateQueries({ queryKey: ["products"] })
     if (id) {
-    queryClient.invalidateQueries({ queryKey: ['products'] })
-      queryClient.invalidateQueries({ queryKey: ['product', id] })
+      queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["product", id] })
     }
   }
 
@@ -129,28 +155,27 @@ export const useAddProduct = (
   }
 }
 
-export const useGetProductById = (id: string, options?: UseQueryOptions<PostgrestSingleResponse<ProductResponse>, Error, ProductResponse>) => {
-  const { data: productData, isLoading } = useQuery<PostgrestSingleResponse<ProductResponse>, Error, ProductResponse>({
-    queryKey: ['product', id],
+export const useGetProductById = (
+  id: string,
+  options?: UseQueryOptions<
+    PostgrestSingleResponse<ProductResponse>,
+    Error,
+    ProductResponse
+  >
+) => {
+  const { data: productData, isLoading } = useQuery<
+    PostgrestSingleResponse<ProductResponse>,
+    Error,
+    ProductResponse
+  >({
+    queryKey: ["product", id],
     queryFn: () => getProductById(id),
-    select: (data) => data.data || {} as ProductResponse,
+    select: (data) => data.data || ({} as ProductResponse),
     ...options,
   })
 
   return {
     productData,
-    isLoading,
-  }
-}
-export const useTextSearch = (text: string, options?: UseQueryOptions<PostgrestSingleResponse<ProductResponse[]>, Error, ProductResponse[]>) => {
-  const { data: productsData, isLoading } = useQuery<PostgrestSingleResponse<ProductResponse[]>, Error, ProductResponse[]>({
-    queryKey: ['products', text],
-    queryFn: () => textSearch(text),
-    select: (data) => data.data || [],
-    ...options,
-  })
-  return {
-    productsData,
     isLoading,
   }
 }
